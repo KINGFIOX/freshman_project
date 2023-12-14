@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layui-container">
+    <div class="layui-row">
+        <!-- 左侧导航栏 -->
+        <div class="layui-col-md3">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-filter="category-nav" lay-skin="primary" id="category-nav-list">
+                    <!-- 动态内容将会被填充到这里 -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- 通知卡片显示区域 -->
+        <div class="layui-col-md9">
+            <div id="notice-cards"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+layui.use(['jquery', 'element', 'laytpl'], function(){
+    var $ = layui.jquery;
+    var element = layui.element;
+    var laytpl = layui.laytpl;
+    
+    var label_to_id = {
+        "升学": 0,
+        "志愿": 1,
+        "教务": 2,
+        "思政": 3,
+        "心理": 4,
+        "灾害": 5,
+        "作业与考试": 6,
+        "竞赛与机会": 7,
+        "企业参观与就业": 8,
+        "生活": 9,
+        "重要通知": 10,
+        "垃圾与乐子": 11,
+    }
+
+    function generateNavItems() {
+        var navList = $("#category-nav-list");
+        for (var label in label_to_id) {
+            var navItem = `
+                <li class="layui-nav-item">
+                    <a href="javascript:;" data-category="${label}">${label}</a>
+                </li>
+            `;
+            navList.append(navItem);
+        }
+    }
+    
+    generateNavItems();
+    fetchNoticesByCategory("升学");
+
+    // 监听侧边栏导航点击事件
+    $('.layui-nav-tree').on('click', 'li a', function() {
+        var category = $(this).data('category');
+        fetchNoticesByCategory(category);
+    });
+
+    // 使用API获取通知并展示
+    function fetchNoticesByCategory(category) {
+        $.ajax({
+            url: 'http://127.0.0.1:5000/Notice/Search?title=' + category,
+            method: 'GET',
+            success: function(data) {
+                renderNotices(data.data); // 假设返回的数据中notices字段包含所有通知
+            }
+        });
+    }
+});
+</script>
+
+<style>
+    .layui-nav-tree .layui-nav-item a {
+        background-color: #f3f3f3; /* Light gray background */
+        color: #333; /* Dark text color */
+    }
+    
+    .layui-nav-tree .layui-nav-item a:hover {
+        background-color: #ddd; /* Darker gray on hover */
+    }
+</style>
+
+{% endblock %}

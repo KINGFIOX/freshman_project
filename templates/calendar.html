@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layui-container">
+    <div class="layui-row">
+        <!-- 左侧日期选择栏 -->
+        <div class="layui-col-md3">
+            <div>
+                <!-- Layui 日历组件 -->
+                <div class="layui-inline" id="date-picker"></div>
+                <br>
+                <br>
+                <!-- 无日期选项 -->
+                <div>
+                    <button class="layui-btn layui-btn-primary" id="no-date">不限日期</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知卡片显示区域 -->
+        <div class="layui-col-md9">
+            <div id="notice-cards"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['jquery', 'element', 'laytpl', 'laydate'], function () {
+        var $ = layui.jquery;
+        var element = layui.element;
+        var laytpl = layui.laytpl;
+        var laydate = layui.laydate;
+
+        // 初始化Layui日历组件
+        laydate.render({
+            elem: '#date-picker',
+            position: 'static',
+            done: function(value) {
+                console.log(value);
+                fetchNoticesByDate(value);
+            }
+        });
+
+
+        // 无日期按钮点击事件
+        $('#no-date').on('click', function () {
+            fetchNoticesByDate(null);
+        });
+
+        function fetchNoticesByDate(date) {
+            var url = date ? 'http://127.0.0.1:5000/Notice/Search?date=' + date : 'http://127.0.0.1:5000/Notice/Search';
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    renderNotices(data.data); // 假设返回的数据中notices字段包含所有通知
+                }
+            });
+        }
+
+    });
+</script>
+
+<style>
+
+</style>
+
+{% endblock %}

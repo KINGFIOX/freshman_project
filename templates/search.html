@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layui-container">
+    <div class="layui-row">
+        <!-- Logo和搜索框 -->
+        <div class="search-section">
+            <!-- Logo -->
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='image/search.png') }}" alt="Your Logo" class="logo">
+            </div>
+
+            <!-- Search Input -->
+            <div class="search-container">
+                <div class="layui-inline">
+                    <input type="text" id="search-input" placeholder="请输入搜索关键词" class="layui-input">
+                </div>
+                <button class="layui-btn" id="search-btn">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜索结果显示区域 -->
+    <div class="layui-row">
+        <div id="notice-cards"></div>
+    </div>
+</div>
+
+<script>
+    layui.use(['jquery', 'element', 'laytpl'], function () {
+        var $ = layui.jquery;
+        var element = layui.element;
+        var laytpl = layui.laytpl;
+
+        $('#search-btn').on('click', function () {
+            var keyword = $('#search-input').val().trim();
+            if (keyword) {
+                fetchNoticesByKeyword(keyword);
+            }
+        });
+
+        function fetchNoticesByKeyword(keyword) {
+            $.ajax({
+                url: `http://127.0.0.1:5000/Notice/Search?keyword=${keyword}`,
+                method: 'GET',
+                success: function (data) {
+                    renderNotices(data.data);
+                }
+            });
+        }
+
+    });
+</script>
+
+<style>
+    .search-section {
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 15px;
+    }
+
+    .logo {
+        width: 360px;
+        /* Adjust as needed */
+    }
+
+    .search-container {
+        display: inline-block;
+    }
+
+    .search-input {
+        width: 400px;
+        /* Adjusted width */
+    }
+
+    .layui-input,
+    .layui-textarea {
+        display: block;
+        width: 400px;
+        border: 2px solid #555454;
+    }
+</style>
+
+{% endblock %}

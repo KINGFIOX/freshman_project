@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="layui-container">
+        <form class="layui-form my-form" action="" lay-filter="noticeForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">通知文本</label>
+                <div class="layui-input-block">
+                    <textarea style="min-width: 10em;" name="content" placeholder="请输入通知内容"
+                              class="layui-textarea" required></textarea>
+                </div>
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" id="auto-identify">自动识别</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分类</label>
+                <div class="layui-input-block">
+                    <select name="title" required>
+                        {% for category in ["升学", "志愿", "教务", "思政", "心理", "灾害", "作业与考试", "竞赛与机会", "企业参观与就业", "生活", "重要通知", "垃圾与乐子"] %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">日期</label>
+                <div class="layui-input-block">
+                    <input type="text" name="date" required placeholder="请输入日期 如：2022年11月24日"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">概要</label>
+                <div class="layui-input-block">
+                    <textarea name="summary" placeholder="请输入概要" required class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="submitNotice">确定</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        layui.use(['form', 'jquery', 'layer'], function () {
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+
+            // 自动识别
+            $('#auto-identify').on('click', function (e) {
+                e.preventDefault();
+
+                var content = $("textarea[name='content']").val();
+
+                if (content.trim() == "") {
+                    return;
+                }
+
+                var index = layer.load(1);
+
+                $.ajax({
+                    type: "POST",
+                    url: 'http://127.0.0.1:5000/Notice/AutoAdd',
+                    data: JSON.stringify({
+                        content: content,
+                        creator_id: 1
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        layer.close(index);
+                        if (data.code === 200) {
+                            $("select[name='title']").val(data.data.title);
+                            $("textarea[name='summary']").val(data.data.summary);
+                            $("input[name='date']").val(data.data.date);
+                            form.render(); // 重新渲染form，使其显示正确的选中状态
+                        }
+                    }
+                });
+            });
+
+            // 提交通知
+            form.on('submit(submitNotice)', function (data) {
+                var index = layer.load(1);
+
+                $.ajax({
+                    type: "POST",
+                    url: 'http://127.0.0.1:5000/Notice/Add',
+                    data: JSON.stringify(data.field),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        layer.close(index);
+                        if (response.code === 200) {
+                            layer.msg("通知添加成功！");
+                            window.location.href = "http://127.0.0.1:5000"
+                        } else {
+                            layer.msg("添加失败，请重试！");
+                        }
+                    }
+                });
+                return false;  // 阻止表单跳转
+            });
+
+        });
+
+    </script>
+
+    <style>
+        .my-form {
+            border: 1px solid #e6e6e6;
+            box-shadow: 0 1px 10px #e6e6e6;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .layui-form-label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .layui-input, .layui-textarea {
+            font-size: 15px;
+        }
+
+        .layui-form-item {
+            margin-bottom: 25px;
+        }
+    </style>
+{% endblock %}
