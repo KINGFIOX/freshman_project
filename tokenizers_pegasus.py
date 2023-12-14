@@ -14,7 +14,7 @@ import jieba
 import sys
 from copy import deepcopy
 
-sys.path.append("../../../../")
+sys.path.append("../../../")
 
 jieba.dt.tmp_dir = os.path.expanduser("~/.cache/")
 # jieba.enable_parallel(8)
