@@ -58,8 +58,8 @@
 
 - templates 文件夹里面存放的就是我们的 jinja2 模板，json 数据传递通过 ajax 实现
   - `base.html`相当于是我们其他 html 的底板，里面是整个网页的主题，可以在其他的 templates html 中看到有`{% extends "base.html" %}`这句话，也可以理解成是继承的关系
-  - `add.html`就是添加通知，并且能够与我们的 server 进行交互（上图！）
-  - `calender.html`就是用到了 layUI 的日历组件，日期与对应的 通知（上图！）
+  - `add.html`就是添加通知，并且能够与我们的 server 进行交互
+  - `calender.html`就是用到了 layUI 的日历组件，日期与对应的 通知
   - `categories.html`就是我们可以看到分类与分类标签的地方（上图！）
   - `search.html`就是搜索页面
 - `exts.py`只进行了一个简单的功能，打开数据库
@@ -71,6 +71,12 @@
 - `blueprints/notices.py`这个就是用来处理通知的，里面有文本摘要，模糊搜索，添加通知，文本分类的函数。
 - `model`这个文件夹里面就存放着：字典`vocab.txt`，超参数`tokenizer_config.json`，`special_tokens_map.json`，`config.json`，以及训练好的模型。
 - `app.py`是`top_module`，能路由网页等，启动网页，依赖`config.py`，`exts.py`，`notice.py`，`templates`
+
+![add.html](add.png)
+
+![calender.html](calender.png)
+
+![categories.html](categories.png)
 
 看了上面的介绍，可以看出，我们的最核心的文件是`notice.py`，下面一览`notice.py`的全貌
 
@@ -493,6 +499,6 @@ trainer.train()
 
 [16] https://nodejs.org/en/download node.js（npm）
 
-[17] https://www.opensuse.org opensuse
+[17] https://www.opensuse.org opensuse（本项目在 opensuse 上训练的）
 
 [18] https://arxiv.org/abs/1706.03762 attention is all you need
