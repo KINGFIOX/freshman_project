@@ -17,11 +17,13 @@ bp = Blueprint("notice", __name__, url_prefix="/Notice")
 # 打印调试信息
 print("开始加载模型，请稍等...")
 model_summarize = PegasusForConditionalGeneration.from_pretrained(
-    "IDEA-CCNL/Randeng-Pegasus-523M-Summary-Chinese-V1")
+    "IDEA-CCNL/Randeng-Pegasus-523M-Summary-Chinese-V1"
+)
 tokenizer_summarize = tkg.PegasusTokenizer.from_pretrained(
-    "IDEA-CCNL/Randeng-Pegasus-523M-Summary-Chinese-V1")
+    "IDEA-CCNL/Randeng-Pegasus-523M-Summary-Chinese-V1"
+)
 
-model_save_path = './model/'
+model_save_path = "./model/"
 # 分类器加载
 model_classify = BertForSequenceClassification.from_pretrained(model_save_path)
 # tokenizer 加载
@@ -49,7 +51,9 @@ id_to_label = {value: key for key, value in label_to_id.items()}
 
 def predict_label(text):
     # 对文本进行编码
-    inputs = tokenizer_classify(text, return_tensors="pt", truncation=True, padding='max_length', max_length=128)
+    inputs = tokenizer_classify(
+        text, return_tensors="pt", truncation=True, padding="max_length", max_length=128
+    )
 
     # 将输入移到模型所在的设备上
     inputs = {key: val.to(model_classify.device) for key, val in inputs.items()}
@@ -66,15 +70,18 @@ def predict_label(text):
     return predicted_label
 
 
-def summarize_text(text, max_length=128, num_beams=4, length_penalty=2.0, max_length_output=150):
+def summarize_text(
+    text, max_length=128, num_beams=4, length_penalty=2.0, max_length_output=150
+):
     """
     用输入的模型和分词器生成输入文本的摘要。
     参数：
         - text (str): 要生成摘要的输入文本。
     """
 
-    inputs = tokenizer_summarize(text, max_length=max_length,
-                                 truncation=True, return_tensors="pt")
+    inputs = tokenizer_summarize(
+        text, max_length=max_length, truncation=True, return_tensors="pt"
+    )
 
     # beam search 生成摘要
     summary_ids = model_summarize.generate(
@@ -82,10 +89,12 @@ def summarize_text(text, max_length=128, num_beams=4, length_penalty=2.0, max_le
         num_beams=num_beams,
         length_penalty=length_penalty,  # 惩罚系数是2.0
         max_length=max_length_output,
-        no_repeat_ngram_size=3  # 生成文本时避免重复的n元组的大小
+        no_repeat_ngram_size=3,  # 生成文本时避免重复的n元组的大小
     )
 
-    return tokenizer_summarize.batch_decode(summary_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+    return tokenizer_summarize.batch_decode(
+        summary_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    )[0]
 
 
 def find_date(text, patterns):
@@ -116,12 +125,12 @@ def AddNotice():
     new_notice = NotificationModel(
         title=data.get("title"),
         content=data.get("content"),
-        date=datetime.datetime.strptime(
-            data.get("date"), "%Y年%m月%d日") if data.get("date") else None,
+        date=datetime.datetime.strptime(data.get("date"), "%Y年%m月%d日")
+        if data.get("date")
+        else None,
         summary=data.get("summary"),
-        creator_id=data.get("creator_id")
+        creator_id=data.get("creator_id"),
     )
-
 
     # 提交数据库
     db.session.add(new_notice)
@@ -132,10 +141,10 @@ def AddNotice():
         "content": data.get("content"),
         "date": new_notice.date,
         "summary": data.get("summary"),
-        "creator_id": data.get("creator_id")
+        "creator_id": data.get("creator_id"),
     }
-    
-    return jsonify({"code": 200, "data":data , "msg": "Notice added successfully"})
+
+    return jsonify({"code": 200, "data": data, "msg": "Notice added successfully"})
 
 
 # 查询通知
@@ -151,7 +160,7 @@ def SearchNotice():
     if keyword:
         keyword_search = or_(
             NotificationModel.content.like(f"%{keyword}%"),
-            NotificationModel.summary.like(f"%{keyword}%")
+            NotificationModel.summary.like(f"%{keyword}%"),
         )
         query = query.filter(keyword_search)
 
@@ -178,7 +187,7 @@ def SearchNotice():
             "date": notice.date.strftime("%Y-%m-%d %H:%M:%S") if notice.date else None,
             "summary": notice.summary,
             "creator_id": notice.creator_id,
-            "created_date": notice.created_date.strftime("%Y-%m-%d %H:%M:%S")
+            "created_date": notice.created_date.strftime("%Y-%m-%d %H:%M:%S"),
         }
         for notice in results
     ]
@@ -205,8 +214,7 @@ def AutoAddNotice():
         r"\d{4}年\d{1,2}月\d{1,2}日",  # YYYY年MM月DD日
     ]
     date_str = find_date(content, patterns)
-    date = datetime.datetime.strptime(
-        date_str, "%Y年%m月%d日") if date_str else None
+    date = datetime.datetime.strptime(date_str, "%Y年%m月%d日") if date_str else None
 
     # new_notice = NotificationModel(
     #     title=title,
@@ -221,14 +229,19 @@ def AutoAddNotice():
         "content": content,
         "date": date_str,
         "summary": summary,
-        "creator_id": data.get("creator_id")
+        "creator_id": data.get("creator_id"),
     }
 
     # db.session.add(new_notice)
     # db.session.commit()
 
-    return jsonify({"code": 200, "data":data, "msg": "Notice added successfully with auto features"})
-    
+    return jsonify(
+        {
+            "code": 200,
+            "data": data,
+            "msg": "Notice added successfully with auto features",
+        }
+    )
 
 
 # if __name__ == '__main__':

@@ -7,10 +7,11 @@ import torch
 import rouge
 import numpy as np
 import random
+
 # from fengshen.examples.pegasus.pegasus_utils import text_segmentate
 import sys
 
-sys.path.append('../../../')
+sys.path.append("../../../")
 
 rouge = rouge.Rouge()
 
@@ -31,13 +32,16 @@ def _is_chinese_char(cp):
     # as is Japanese Hiragana and Katakana. Those alphabets are used to write
     # space-separated words, so they are not treated specially and handled
     # like the all of the other languages.
-    if ((cp >= 0x4E00 and cp <= 0x9FFF) or (cp >= 0x3400 and cp <= 0x4DBF)
-            or (cp >= 0x20000 and cp <= 0x2A6DF)
-            or (cp >= 0x2A700 and cp <= 0x2B73F)
-            or (cp >= 0x2B740 and cp <= 0x2B81F)
-            or (cp >= 0x2B820 and cp <= 0x2CEAF)
-            or (cp >= 0xF900 and cp <= 0xFAFF)
-            or (cp >= 0x2F800 and cp <= 0x2FA1F)):
+    if (
+        (cp >= 0x4E00 and cp <= 0x9FFF)
+        or (cp >= 0x3400 and cp <= 0x4DBF)
+        or (cp >= 0x20000 and cp <= 0x2A6DF)
+        or (cp >= 0x2A700 and cp <= 0x2B73F)
+        or (cp >= 0x2B740 and cp <= 0x2B81F)
+        or (cp >= 0x2B820 and cp <= 0x2CEAF)
+        or (cp >= 0xF900 and cp <= 0xFAFF)
+        or (cp >= 0x2F800 and cp <= 0x2FA1F)
+    ):
         return True
 
     return False
@@ -74,8 +78,12 @@ def _is_punctuation(char):
     # Characters such as "^", "$", and "`" are not in the Unicode
     # Punctuation class but we treat them as punctuation anyways, for
     # consistency.
-    if (cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or (
-            cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126):
+    if (
+        (cp >= 33 and cp <= 47)
+        or (cp >= 58 and cp <= 64)
+        or (cp >= 91 and cp <= 96)
+        or (cp >= 123 and cp <= 126)
+    ):
         return True
     cat = unicodedata.category(char)
     if cat.startswith("P"):
@@ -84,8 +92,7 @@ def _is_punctuation(char):
 
 
 def is_string(s):
-    """判断是否是字符串
-    """
+    """判断是否是字符串"""
     return isinstance(s, basestring)
 
 
@@ -97,15 +104,15 @@ def is_stopwords(word, stopwords):
 
 
 def text_segmentate(text):
-    en_seg_pattern = '((?:\\!|\\?|\\.|\\n)+(?:\\s)+)'
-    ch_seg_pattern = '((?:？|！|。|\\n)+)'
+    en_seg_pattern = "((?:\\!|\\?|\\.|\\n)+(?:\\s)+)"
+    ch_seg_pattern = "((?:？|！|。|\\n)+)"
     try:
-        text = re.sub(en_seg_pattern, r'\1[SEP]', text)
+        text = re.sub(en_seg_pattern, r"\1[SEP]", text)
         # print("sub text: ", text)
     except Exception as e:
         print("input: ", text)
         raise e
-    text = re.sub(ch_seg_pattern, r'\1[SEP]', text)
+    text = re.sub(ch_seg_pattern, r"\1[SEP]", text)
     # print("sub ch text: ", text)
     text_list = text.split("[SEP]")
     text_list = list(filter(lambda x: len(x) != 0, text_list))
@@ -125,8 +132,7 @@ def load_stopwords(stopwords_path):
 
 
 def text_process(text, max_length):
-    """分割文本
-    """
+    """分割文本"""
     texts = text_segmentate(text)
 
     result, length = [], 0
@@ -141,8 +147,7 @@ def text_process(text, max_length):
 
 
 def text_process_split_long_content(text, max_length):
-    """分割长文本
-    """
+    """分割长文本"""
     texts = text_segmentate(text)
 
     result, sentence_num = "", 0
@@ -166,9 +171,8 @@ def text_process_split_long_content(text, max_length):
 
 
 def gather_join(texts, idxs):
-    """取出对应的text，然后拼接起来
-    """
-    return ''.join([texts[i] for i in idxs])
+    """取出对应的text，然后拼接起来"""
+    return "".join([texts[i] for i in idxs])
 
 
 def gather_join_f1(texts_token, idsx):
@@ -179,21 +183,20 @@ def gather_join_f1(texts_token, idsx):
 
 
 def compute_rouge(source, target):
-    """计算rouge-1、rouge-2、rouge-l
-    """
-    source, target = ' '.join(source), ' '.join(target)
+    """计算rouge-1、rouge-2、rouge-l"""
+    source, target = " ".join(source), " ".join(target)
     try:
         scores = rouge.get_scores(hyps=source, refs=target)
         return {
-            'rouge-1': scores[0]['rouge-1']['f'],
-            'rouge-2': scores[0]['rouge-2']['f'],
-            'rouge-l': scores[0]['rouge-l']['f'],
+            "rouge-1": scores[0]["rouge-1"]["f"],
+            "rouge-2": scores[0]["rouge-2"]["f"],
+            "rouge-l": scores[0]["rouge-l"]["f"],
         }
     except ValueError:
         return {
-            'rouge-1': 0.0,
-            'rouge-2': 0.0,
-            'rouge-l': 0.0,
+            "rouge-1": 0.0,
+            "rouge-2": 0.0,
+            "rouge-l": 0.0,
         }
 
 
@@ -203,13 +206,10 @@ def remove_stopwords(texts, stopwords_dict):
     return texts
 
 
-def pseudo_summary_f1(texts,
-                      stopwords,
-                      tokenizer,
-                      max_length,
-                      rouge_strategy="rouge-l"):
-    """构建伪标签摘要数据集
-    """
+def pseudo_summary_f1(
+    texts, stopwords, tokenizer, max_length, rouge_strategy="rouge-l"
+):
+    """构建伪标签摘要数据集"""
     summary_rate = 0.25
     max_length = max_length - 1
     texts_tokens = []
@@ -247,8 +247,7 @@ def pseudo_summary_f1(texts,
         source = gather_join(texts, source_idxs)
         target = gather_join(texts, target_idxs)
         try:
-            if (len(source_idxs) == 1
-                    or 1.0 * len(target) / len(source) > summary_rate):
+            if len(source_idxs) == 1 or 1.0 * len(target) / len(source) > summary_rate:
                 break
         except ZeroDivisionError as e:
             print(e.meesage)
@@ -296,8 +295,9 @@ def get_input_mask(sentence_id_vec, indexs):
     return input_idxs, target_idxs
 
 
-def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int,
-                       decoder_start_token_id: int):
+def shift_tokens_right(
+    input_ids: torch.Tensor, pad_token_id: int, decoder_start_token_id: int
+):
     """
     Shift input ids one token to the right.
     """
