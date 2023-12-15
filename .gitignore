@@ -3,3 +3,4 @@ model
 utils/classification/model_20231215_094603
 utils/classification/model_20231215_103751
 *.bin
+.idea
