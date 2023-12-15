@@ -123,6 +123,7 @@ def AddNotice():
     )
 
 
+    # 提交数据库
     db.session.add(new_notice)
     db.session.commit()
 
