@@ -54,8 +54,9 @@
   "pooler_size_per_head": 128,
   "pooler_type": "first_token_transform",
   "position_embedding_type": "absolute",
+  "problem_type": "single_label_classification",
   "torch_dtype": "float32",
-  "transformers_version": "4.32.1",
+  "transformers_version": "4.29.2",
   "type_vocab_size": 2,
   "use_cache": true,
   "vocab_size": 21128
