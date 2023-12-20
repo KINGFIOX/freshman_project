@@ -1,18 +1,21 @@
 from flask import Flask, render_template  # 引入模板插件
 import config  # 数据库的配置文件
 from exts import db
+
 # from blueprints import user_bp
 from blueprints import notice_bp
 from flask_cors import CORS  # Flask的跨域问题
 from flask_migrate import Migrate
+
 # from models import UserModel as User  没有用到用户系统
 
 # 应用配置信息
-app = Flask(__name__,
-            static_folder='./static',  # 设置静态文件夹目录
-            template_folder="./templates",
-            # static_url_path=""
-         )
+app = Flask(
+    __name__,
+    static_folder="./static",  # 设置静态文件夹目录
+    template_folder="./templates",
+    # static_url_path=""
+)
 app.config.from_object(config)
 db.init_app(app)
 
@@ -29,37 +32,37 @@ migrate = Migrate(app, db)
 app.register_blueprint(notice_bp)
 
 
-@app.route('/')
+@app.route("/")
 def index():
     # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
-    return render_template('categories.html', name='index')
+    return render_template("categories.html", name="index")
 
 
-@app.route('/categories')
+@app.route("/categories")
 def categories():
     # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
-    return render_template('categories.html', name='categories')
+    return render_template("categories.html", name="categories")
 
 
-@app.route('/calendar')
+@app.route("/calendar")
 def calendar():
     # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
-    return render_template('calendar.html', name='calendar')
+    return render_template("calendar.html", name="calendar")
 
 
-@app.route('/search')
+@app.route("/search")
 def search():
     # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
-    return render_template('search.html', name='search')
+    return render_template("search.html", name="search")
 
 
-@app.route('/add')
+@app.route("/add")
 def add_notice():
     # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
-    return render_template('add.html', name='add')
+    return render_template("add.html", name="add")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # lsof -i :5000
 
     # with app.app_context():
@@ -74,4 +77,5 @@ if __name__ == '__main__':
     #         db.session.add(admin)
     #         db.session.commit()
 
-    app.run(host='0.0.0.0',port=7891, debug=True)
+    # app.run(host="0.0.0.0", port=7891, debug=True)
+    app.run(debug=True)
