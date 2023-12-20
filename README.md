@@ -6,11 +6,11 @@
 
 分为几个步骤：
 
-1. 导入模型与资源
+### 1. 导入模型与资源
 
 在 release 中下载 static 与 model，将解压后的文件夹，放入到本项目中
 
-2. 环境说明
+### 2. 环境说明
 
 本机环境：
 
@@ -18,7 +18,7 @@ anaconda，缺啥安装啥，推荐使用 pyenv，然后使用 anaconda 的 base
 
 本人之前使用 miniforge，在使用 fengshen 的 pegasus 模型的时候出现一个 vocab 的错误。
 
-3. 导入到数据库
+### 3. 导入到数据库
 
 先尝试能不能成功运行`flask run`，打开页面，可以看到是没有内容的
 
@@ -28,6 +28,6 @@ anaconda，缺啥安装啥，推荐使用 pyenv，然后使用 anaconda 的 base
 
 然后再在 config.py 中设置与数据库链接的配置信息，测试连通本地的数据库
 
-4. 启动项目
+### 4. 启动项目
 
 最后再次运行`flask run`
