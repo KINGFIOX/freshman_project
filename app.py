@@ -46,7 +46,7 @@ def categories():
 
 @app.route("/calendar")
 def calendar():
-    # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
+    # 使用模板插件，引入calendar.html。此处会自动Flask模板文件目录寻找calendar.html文件。
     return render_template("calendar.html", name="calendar")
 
 

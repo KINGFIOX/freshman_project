@@ -35,7 +35,7 @@
         laydate.render({
             elem: '#date-picker',
             position: 'static',
-            done: function(value) {
+            done: function (value) {
                 console.log(value);
                 fetchNoticesByDate(value);
             }
@@ -61,9 +61,4 @@
 
     });
 </script>
-
-<style>
-
-</style>
-
 {% endblock %}
